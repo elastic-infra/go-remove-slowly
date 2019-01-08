@@ -1,0 +1,113 @@
+version: 2.1
+
+executors:
+  builder:
+    docker:
+      - image: circleci/golang:1.11
+    environment:
+      GO111MODULE: 'on'
+
+jobs:
+  build:
+    working_directory: /go/src/github.com/elastic-infra/go-remove-slowly
+    executor: builder
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-pkg-build-cache
+      - run:
+          name: Install tools
+          command: |
+            GO111MODULE=auto go get -u github.com/mitchellh/gox
+      - save_cache:
+          key: v1-pkg-build-cache
+          paths:
+            - "/go/pkg"
+      - run:
+          name: Build
+          command: |
+            make
+      - run:
+          name: Create archive
+          command: |
+            tar czf /tmp/all-go-remove-slowly.tgz dist/
+            mv /tmp/all-go-remove-slowly.tgz. dist/
+      - store_artifacts:
+          path: dist/
+          destination: dist
+      - persist_to_workspace:
+          root: .
+          paths:
+            - dist
+  release:
+    executor: builder
+    steps:
+      - attach_workspace:
+          at: /tmp/build
+      - run:
+          name: Install release tool
+          command: |
+            GO111MODULE=auto go get -u github.com/tcnksm/ghr
+      - run:
+          name: Create GitHub release
+          command: |
+            ghr -t ${GITHUB_ACCESS_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} ${CIRCLE_TAG} /tmp/build/dist
+  test:
+    working_directory: /go/src/github.com/elastic-infra/go-remove-slowly
+    executor: builder
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-pkg-test-cache
+      - run:
+          name: Download packages
+          command: |
+            go mod download
+      - save_cache:
+          key: v1-pkg-test-cache
+          paths:
+            - "/go/pkg"
+      - run:
+          name: Run Test
+          command: |
+            make test
+      - store_test_results:
+          path: /tmp/test_results
+      - store_artifacts:
+          path: test/
+          destination: test
+
+workflows:
+  version: 2
+  build-test:
+    jobs:
+      - test:
+          filters:
+            tags:
+              only: /.*/
+      - build:
+          requires:
+            - test
+          filters:
+            tags:
+              only: /.*/
+      - release:
+          requires:
+            - build
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+  nightly:
+    jobs:
+      - test
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - master

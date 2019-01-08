@@ -32,7 +32,7 @@ jobs:
           name: Create archive
           command: |
             tar czf /tmp/all-go-remove-slowly.tgz dist/
-            mv /tmp/all-go-remove-slowly.tgz. dist/
+            mv /tmp/all-go-remove-slowly.tgz dist/
       - store_artifacts:
           path: dist/
           destination: dist

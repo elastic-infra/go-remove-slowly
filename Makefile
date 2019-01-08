@@ -16,4 +16,4 @@ test:
 	go tool cover -html=test/coverage.out -o test/coverage.html
 
 clean:
-	- $(RM) dist/*
+	- $(RM) dist/* test/*

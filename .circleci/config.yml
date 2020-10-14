@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   go: circleci/go@1.4.0
+  slack: circleci/slack@4.0.1
 
 executors:
   builder:
@@ -23,6 +24,8 @@ jobs:
       - store_artifacts:
           path: dist/
           destination: dist
+      - slack/notify:
+          event: fail
   release:
     executor: builder
     steps:
@@ -31,6 +34,7 @@ jobs:
       - run:
           name: Go Releaser
           command: curl -sL https://git.io/goreleaser | bash
+      - slack/notify
   test:
     executor: builder
     steps:
@@ -45,10 +49,12 @@ jobs:
       - store_artifacts:
           path: test/
           destination: test
+      - slack/notify:
+          event: fail
 
 workflows:
   version: 2
-  build-test:
+  test_build_or_release:
     jobs:
       - test:
           filters:

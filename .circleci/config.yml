@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  go: circleci/go@1.4.0
+
 executors:
   builder:
     working_directory: /go/src/github.com/elastic-infra/go-remove-slowly
@@ -13,61 +16,26 @@ jobs:
     executor: builder
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - v1-pkg-build-cache
-      - run:
-          name: Install tools
-          command: |
-            GO111MODULE=auto go get -u github.com/mitchellh/gox
-      - save_cache:
-          key: v1-pkg-build-cache
-          paths:
-            - "/go/pkg"
+      - go/mod-download-cached
       - run:
           name: Build
-          command: |
-            make
-      - run:
-          name: Create archive
-          command: |
-            tar czf /tmp/all-go-remove-slowly.tgz dist/
-            mv /tmp/all-go-remove-slowly.tgz dist/
+          command: curl -sL https://git.io/goreleaser | bash -s -- --snapshot --skip-publish --rm-dist
       - store_artifacts:
           path: dist/
           destination: dist
-      - persist_to_workspace:
-          root: .
-          paths:
-            - dist
   release:
     executor: builder
     steps:
-      - attach_workspace:
-          at: /tmp/build
+      - checkout
+      - go/mod-download-cached
       - run:
-          name: Install release tool
-          command: |
-            GO111MODULE=auto go get -u github.com/tcnksm/ghr
-      - run:
-          name: Create GitHub release
-          command: |
-            ghr -t ${GITHUB_ACCESS_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} ${CIRCLE_TAG} /tmp/build/dist
+          name: Go Releaser
+          command: curl -sL https://git.io/goreleaser | bash
   test:
     executor: builder
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - v1-pkg-test-cache
-      - run:
-          name: Download packages
-          command: |
-            go mod download
-      - save_cache:
-          key: v1-pkg-test-cache
-          paths:
-            - "/go/pkg"
+      - go/mod-download-cached
       - run:
           name: Run Test
           command: |
@@ -91,10 +59,10 @@ workflows:
             - test
           filters:
             tags:
-              only: /.*/
+              ignore: /^v.*/
       - release:
           requires:
-            - build
+            - test
           filters:
             tags:
               only: /^v.*/
@@ -109,4 +77,4 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main

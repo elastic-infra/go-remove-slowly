@@ -26,6 +26,7 @@ jobs:
           destination: dist
       - slack/notify:
           event: fail
+          template: basic_fail_1
   release:
     executor: builder
     steps:
@@ -34,7 +35,13 @@ jobs:
       - run:
           name: Go Releaser
           command: curl -sL https://git.io/goreleaser | bash
-      - slack/notify
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+      - slack/notify:
+          event: pass
+          template: success_tagged_deploy_1
+  
   test:
     executor: builder
     steps:
@@ -51,6 +58,7 @@ jobs:
           destination: test
       - slack/notify:
           event: fail
+          template: basic_fail_1
 
 workflows:
   version: 2

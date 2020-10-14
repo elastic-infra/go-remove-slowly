@@ -2,6 +2,7 @@ version: 2.1
 
 executors:
   builder:
+    working_directory: /go/src/github.com/elastic-infra/go-remove-slowly
     docker:
       - image: circleci/golang:1.15
     environment:
@@ -9,7 +10,6 @@ executors:
 
 jobs:
   build:
-    working_directory: /go/src/github.com/elastic-infra/go-remove-slowly
     executor: builder
     steps:
       - checkout
@@ -54,7 +54,6 @@ jobs:
           command: |
             ghr -t ${GITHUB_ACCESS_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} ${CIRCLE_TAG} /tmp/build/dist
   test:
-    working_directory: /go/src/github.com/elastic-infra/go-remove-slowly
     executor: builder
     steps:
       - checkout

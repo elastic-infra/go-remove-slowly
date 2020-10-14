@@ -3,7 +3,10 @@ TARGET=remove-slowly
 ALL: build
 
 build: dist */*.go
-	env CGO_ENABLED=0 gox -os "linux" -arch "amd64 386 arm arm64" -output dist/remove-slowly_{{.OS}}_{{.Arch}} ./...
+	env CGO_ENABLED=0 go build -o dist/remove-slowly ./cli
+
+release-local-dryrun:
+	goreleaser --snapshot --skip-publish --rm-dist
 
 dist: $@
 	mkdir $@
@@ -16,4 +19,4 @@ test:
 	go tool cover -html=test/coverage.out -o test/coverage.html
 
 clean:
-	- $(RM) dist/* test/*
+	- $(RM) -rf dist/* test/*

@@ -52,20 +52,20 @@ func NewApp() *MyApp {
 
 	app.Flags = []cli.Flag{
 		&cli.DurationFlag{
-			Name:  "interval",
+			Name:    "interval",
 			Aliases: []string{"i"},
-			Usage: "Interval between truncations",
-			Value: time.Duration(10) * time.Millisecond,
+			Usage:   "Interval between truncations",
+			Value:   time.Duration(10) * time.Millisecond,
 		},
 		&cli.BoolFlag{
-			Name:  "quiet",
+			Name:    "quiet",
 			Aliases: []string{"q"},
-			Usage: "When true, no output is written",
+			Usage:   "When true, no output is written",
 		},
 		&cli.BoolFlag{
-			Name: "version",
+			Name:    "version",
 			Aliases: []string{"v"},
-			Usage: "Show version and build information",
+			Usage:   "Show version and build information",
 		},
 	}
 	return app

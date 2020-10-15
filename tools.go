@@ -2,7 +2,7 @@
 
 package main
 
-import(
-	_ "gotest.tools/gotestsum"
+import (
 	_ "github.com/mitchellh/gox"
+	_ "gotest.tools/gotestsum"
 )

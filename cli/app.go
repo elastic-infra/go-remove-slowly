@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/elastic-infra/go-remove-slowly/filesystem"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 )
 
 type MyApp struct {
@@ -32,7 +32,7 @@ func NewApp() *MyApp {
 		stream := NewIoMayDumbWriter(os.Stdout, isDumb)
 		app.stream = stream
 		errs := []error{}
-		for _, filePath := range context.Args() {
+		for _, filePath := range context.Args().Slice() {
 			fmt.Fprintln(app.stream, "Removing File: "+filePath)
 			truncator := filesystem.NewFileTruncator(filePath, context.Duration("interval"), app.stream)
 			if err := truncator.Remove(); err != nil {
@@ -51,14 +51,21 @@ func NewApp() *MyApp {
 	}
 
 	app.Flags = []cli.Flag{
-		cli.DurationFlag{
-			Name:  "interval, i",
+		&cli.DurationFlag{
+			Name:  "interval",
+			Aliases: []string{"i"},
 			Usage: "Interval between truncations",
 			Value: time.Duration(10) * time.Millisecond,
 		},
-		cli.BoolFlag{
-			Name:  "quiet, q",
+		&cli.BoolFlag{
+			Name:  "quiet",
+			Aliases: []string{"q"},
 			Usage: "When true, no output is written",
+		},
+		&cli.BoolFlag{
+			Name: "version",
+			Aliases: []string{"v"},
+			Usage: "Show version and build information",
 		},
 	}
 	return app

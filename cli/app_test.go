@@ -38,7 +38,7 @@ func TestAction(t *testing.T) {
 		tmpfiles = append(tmpfiles, path)
 		defer func() { os.Remove(path) }()
 	}
-	err := app.Run(append([]string{"-q"}, tmpfiles...))
+	err := app.Run(append([]string{"cmd", "-q"}, tmpfiles...))
 	if err != nil {
 		t.Fatalf("Error happened: %s", err.Error())
 	}
@@ -70,7 +70,7 @@ func TestAction_PathError(t *testing.T) {
 		tmpfiles = append(tmpfiles, path)
 		defer func() { os.Remove(path) }()
 	}
-	err := app.Run(append([]string{"-q"}, tmpfiles...))
+	err := app.Run(append([]string{"cmd", "-q"}, tmpfiles...))
 	if err == nil {
 		t.Fatalf("Error did not happen (it should)")
 	}

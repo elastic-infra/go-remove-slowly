@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -73,6 +74,20 @@ func TestAction_PathError(t *testing.T) {
 	err := app.Run(append([]string{"cmd", "-q"}, tmpfiles...))
 	if err == nil {
 		t.Fatalf("Error did not happen (it should)")
+	}
+}
+
+func TestAction_Version(t *testing.T) {
+	app := NewApp()
+	output := captureOutput(func() {
+		err := app.Run([]string{"cmd", "-v"})
+		if err != nil {
+			t.Fatalf(err.Error())
+		}
+	})
+	t.Logf("Output: %s", output)
+	if !strings.HasPrefix(output, "go-remove-slowly ") {
+		t.Fatalf("version string should begin with the app name")
 	}
 }
 

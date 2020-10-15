@@ -28,6 +28,10 @@ func NewApp() *MyApp {
 	app.Usage = "Remove files slowly"
 
 	app.Action = func(context *cli.Context) error {
+		if context.Bool("version") {
+			fmt.Printf("%s\n", versionString())
+			return nil
+		}
 		isDumb := context.Bool("quiet")
 		stream := NewIoMayDumbWriter(os.Stdout, isDumb)
 		app.stream = stream

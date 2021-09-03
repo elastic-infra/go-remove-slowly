@@ -25,10 +25,10 @@ type FileTruncator struct {
 }
 
 // NewFileTruncator returns a new file truncator
-func NewFileTruncator(filePath string, interval time.Duration, size int64, writer io.Writer) *FileTruncator {
+func NewFileTruncator(filePath string, interval time.Duration, sizeMB int64, writer io.Writer) *FileTruncator {
 	truncator := &FileTruncator{
 		FilePath:         filePath,
-		TruncateUnit:     size * truncateSizeUnit,
+		TruncateUnit:     sizeMB * truncateSizeUnit,
 		TruncateInterval: interval,
 		writer:           writer,
 	}

@@ -10,8 +10,9 @@ import (
 )
 
 const (
-	// DefaultTruncateUnitSize represents default truncate size.
-	DefaultTruncateUnitSize = 1024 * 1024
+	// DefaultTruncateSizeMB represents default truncate size.
+	DefaultTruncateSizeMB = 1
+	truncateSizeUnit      = 1024 * 1024 // MB
 )
 
 // FileTruncator encapsulates necessary data for truncation
@@ -24,10 +25,10 @@ type FileTruncator struct {
 }
 
 // NewFileTruncator returns a new file truncator
-func NewFileTruncator(filePath string, interval time.Duration, unitSize int64, writer io.Writer) *FileTruncator {
+func NewFileTruncator(filePath string, interval time.Duration, size int64, writer io.Writer) *FileTruncator {
 	truncator := &FileTruncator{
 		FilePath:         filePath,
-		TruncateUnit:     unitSize,
+		TruncateUnit:     size * truncateSizeUnit,
 		TruncateInterval: interval,
 		writer:           writer,
 	}

@@ -130,8 +130,8 @@ func NewApp() *MyApp {
 		&cli.Int64Flag{
 			Name:    "size",
 			Aliases: []string{"s"},
-			Usage:   "Truncation size at once",
-			Value:   filesystem.DefaultTruncateUnitSize,
+			Usage:   "Truncation size at once[MB]",
+			Value:   filesystem.DefaultTruncateSizeMB,
 		},
 	}
 	return app

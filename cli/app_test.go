@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -99,5 +100,133 @@ func createFile(path string, size int64) {
 	_, err = file.WriteAt([]byte("a"), size-1)
 	if err != nil {
 		panic("Failed to write file " + path + " " + err.Error())
+	}
+}
+
+func Test_getFilePaths(t *testing.T) {
+	type args struct {
+		paths []string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    []string
+		wantErr bool
+	}{
+		{
+			name: "file only",
+			args: args{
+				paths: []string{"test/file0"},
+			},
+			want: []string{
+				"test/file0",
+			},
+		},
+		{
+			name: "dup files",
+			args: args{
+				paths: []string{"test/file0", "test/file0"},
+			},
+			want: []string{
+				"test/file0",
+			},
+		},
+		{
+			name: "dir only",
+			args: args{
+				paths: []string{"test/foo/"},
+			},
+			want: []string{
+				"test/foo/file1",
+				"test/foo/file2",
+			},
+		},
+		{
+			name: "dup dir",
+			args: args{
+				paths: []string{"test/", "test/foo/"},
+			},
+			want: []string{
+				"test/file0",
+				"test/foo/file1",
+				"test/foo/file2",
+			},
+		},
+		{
+			name: "file and dir",
+			args: args{
+				paths: []string{"test/file0", "test/foo/"},
+			},
+			want: []string{
+				"test/file0",
+				"test/foo/file1",
+				"test/foo/file2",
+			},
+		},
+		{
+			name: "no such file or dir",
+			args: args{
+				paths: []string{"test/xxxx"},
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := getFilePaths(tt.args.paths)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("getFilePaths() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("getFilePaths() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_isDirectory(t *testing.T) {
+	type args struct {
+		path string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    bool
+		wantErr bool
+	}{
+		{
+			name: "yes",
+			args: args{
+				path: "test",
+			},
+			want: true,
+		},
+		{
+			name: "not",
+			args: args{
+				path: "main.go",
+			},
+			want: false,
+		},
+		{
+			name: "error",
+			args: args{
+				path: "no_path",
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := isDirectory(tt.args.path)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("isDirectory() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("isDirectory() = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }

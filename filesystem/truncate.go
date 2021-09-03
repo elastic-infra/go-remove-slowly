@@ -9,6 +9,12 @@ import (
 	pb "gopkg.in/cheggaaa/pb.v1"
 )
 
+const (
+	// DefaultTruncateSizeMB represents default truncate size.
+	DefaultTruncateSizeMB = 1
+	truncateSizeUnit      = 1024 * 1024 // MB
+)
+
 // FileTruncator encapsulates necessary data for truncation
 type FileTruncator struct {
 	FilePath         string
@@ -19,10 +25,10 @@ type FileTruncator struct {
 }
 
 // NewFileTruncator returns a new file truncator
-func NewFileTruncator(filePath string, interval time.Duration, writer io.Writer) *FileTruncator {
+func NewFileTruncator(filePath string, interval time.Duration, sizeMB int64, writer io.Writer) *FileTruncator {
 	truncator := &FileTruncator{
 		FilePath:         filePath,
-		TruncateUnit:     1024 * 1024,
+		TruncateUnit:     sizeMB * truncateSizeUnit,
 		TruncateInterval: interval,
 		writer:           writer,
 	}

@@ -38,7 +38,7 @@ func NewApp() *MyApp {
 		errs := []error{}
 		for _, filePath := range context.Args().Slice() {
 			fmt.Fprintln(app.stream, "Removing File: "+filePath)
-			truncator := filesystem.NewFileTruncator(filePath, context.Duration("interval"), app.stream)
+			truncator := filesystem.NewFileTruncator(filePath, context.Duration("interval"), context.Int64("size"), app.stream)
 			if err := truncator.Remove(); err != nil {
 				fmt.Fprintf(os.Stderr, "File %s removal error: %s\n", filePath, err.Error())
 				errs = append(errs, err)
@@ -70,6 +70,12 @@ func NewApp() *MyApp {
 			Name:    "version",
 			Aliases: []string{"v"},
 			Usage:   "Show version and build information",
+		},
+		&cli.Int64Flag{
+			Name:    "size",
+			Aliases: []string{"s"},
+			Usage:   "Truncation size at once",
+			Value:   filesystem.DefaultTruncateUnitSize,
 		},
 	}
 	return app

@@ -51,7 +51,7 @@ func (truncator *FileTruncator) Remove() error {
 	for i := 0; i < truncateCount; i++ {
 		bar.Increment()
 		time.Sleep(truncator.TruncateInterval)
-		file.Truncate(truncator.TruncateUnit)
+		file.Truncate(truncator.FileSize - int64(i)*truncator.TruncateUnit)
 		file.Sync()
 	}
 	bar.FinishPrint("Removed " + truncator.FilePath)

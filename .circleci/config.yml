@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   go: circleci/go@1.4.0
-  slack: circleci/slack@4.0.1
+  slack: circleci/slack@4.5.0
 
 executors:
   builder:
@@ -65,16 +65,23 @@ workflows:
   test_build_or_release:
     jobs:
       - test:
+          context:
+            - SlackApp-OAuth
           filters:
             tags:
               only: /.*/
       - build:
+          context:
+            - SlackApp-OAuth
           requires:
             - test
           filters:
             tags:
               ignore: /^v.*/
       - release:
+          context:
+            - SlackApp-OAuth
+            - GithubRelease
           requires:
             - test
           filters:
@@ -84,7 +91,9 @@ workflows:
               ignore: /.*/
   nightly:
     jobs:
-      - test
+      - test:
+          context:
+            - SlackApp-OAuth
     triggers:
       - schedule:
           cron: "0 0 * * *"

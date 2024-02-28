@@ -1,14 +1,13 @@
 version: 2.1
 
 orbs:
-  go: circleci/go@1.4.0
-  slack: circleci/slack@4.5.0
+  go: circleci/go@1.11.0
+  slack: circleci/slack@4.13.1
 
 executors:
   builder:
-    working_directory: /go/src/github.com/elastic-infra/go-remove-slowly
     docker:
-      - image: circleci/golang:1.15
+      - image: cimg/go:1.22.0
     environment:
       GO111MODULE: 'on'
 
@@ -20,7 +19,7 @@ jobs:
       - go/mod-download-cached
       - run:
           name: Build
-          command: curl -sL https://git.io/goreleaser | bash -s -- --snapshot --skip-publish --rm-dist
+          command: curl -sL https://git.io/goreleaser | bash -s -- --snapshot --skip=publish --clean
       - store_artifacts:
           path: dist/
           destination: dist

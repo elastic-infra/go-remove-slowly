@@ -14,7 +14,7 @@ dist: $@
 .PHONY: clean test build
 
 test: clean
-	@mkdir -p test /tmp/test_results cli/test/foo
+	@mkdir -p test /tmp/test_results cli/test/foo cli/test/bar
 	touch cli/test/file0 cli/test/foo/file1 cli/test/foo/file2
 	gotestsum --junitfile /tmp/test_results/unit-tests.xml -- -coverprofile=./test/coverage.out ./...
 	go tool cover -html=test/coverage.out -o test/coverage.html

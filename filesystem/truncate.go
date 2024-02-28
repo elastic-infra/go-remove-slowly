@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/elastic-infra/go-remove-slowly/output"
 	pb "gopkg.in/cheggaaa/pb.v1"
 )
 
@@ -22,14 +23,16 @@ type FileTruncator struct {
 	writer           io.Writer
 	TruncateUnit     int64
 	TruncateInterval time.Duration
+	OutputType       output.Type
 }
 
 // NewFileTruncator returns a new file truncator
-func NewFileTruncator(filePath string, interval time.Duration, sizeMB int64, writer io.Writer) *FileTruncator {
+func NewFileTruncator(filePath string, interval time.Duration, sizeMB int64, outputType output.Type, writer io.Writer) *FileTruncator {
 	truncator := &FileTruncator{
 		FilePath:         filePath,
 		TruncateUnit:     sizeMB * truncateSizeUnit,
 		TruncateInterval: interval,
+		OutputType:       outputType,
 		writer:           writer,
 	}
 	return truncator

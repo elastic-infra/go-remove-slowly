@@ -95,7 +95,7 @@ func NewApp() *MyApp {
 
 		for _, target := range targetFilePaths {
 			fmt.Fprintln(app.stream, "Removing File: "+target)
-			truncator := filesystem.NewFileTruncator(target, context.Duration("interval"), context.Int64("size"), app.stream)
+			truncator := filesystem.NewFileTruncator(target, context.Duration("interval"), context.Int64("size"), output.Type(context.String("output")), app.stream)
 			if err := truncator.Remove(); err != nil {
 				fmt.Fprintf(os.Stderr, "File %s removal error: %s\n", target, err.Error())
 				errs = append(errs, err)

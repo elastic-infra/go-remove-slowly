@@ -6,7 +6,7 @@ build: dist */*.go
 	env CGO_ENABLED=0 go build -o dist/remove-slowly ./cli
 
 release-local-dryrun:
-	goreleaser --snapshot --skip-publish --rm-dist
+	goreleaser --snapshot --skip-publish --clean
 
 dist: $@
 	mkdir $@

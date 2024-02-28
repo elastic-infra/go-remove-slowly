@@ -20,7 +20,7 @@ jobs:
       - go/mod-download-cached
       - run:
           name: Build
-          command: curl -sL https://git.io/goreleaser | bash -s -- --snapshot --skip-publish --rm-dist
+          command: curl -sL https://git.io/goreleaser | bash -s -- --snapshot --skip-publish --clean
       - store_artifacts:
           path: dist/
           destination: dist

@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/elastic-infra/go-remove-slowly/filesystem"
+	"github.com/elastic-infra/go-remove-slowly/output"
 	"github.com/urfave/cli/v2"
 )
 
@@ -121,6 +122,12 @@ func NewApp() *MyApp {
 			Name:    "quiet",
 			Aliases: []string{"q"},
 			Usage:   "When true, no output is written",
+		},
+		&cli.StringFlag{
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "Select the type of output produced (Supported options: simple, progress-bar)",
+			Value:   output.Type_ProgressBar,
 		},
 		&cli.BoolFlag{
 			Name:    "version",

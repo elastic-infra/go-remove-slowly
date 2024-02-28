@@ -7,8 +7,8 @@ import (
 	"os"
 	"time"
 
+	pb "github.com/cheggaaa/pb/v3"
 	"github.com/elastic-infra/go-remove-slowly/output"
-	pb "gopkg.in/cheggaaa/pb.v1"
 )
 
 const (
@@ -53,8 +53,10 @@ func (truncator *FileTruncator) Remove() error {
 
 	var bar *pb.ProgressBar
 	if truncator.OutputType == output.Type_ProgressBar {
-		bar = pb.New(truncateCount).SetUnits(pb.MiB)
-		bar.Output = truncator.writer
+		tmpl := "\r" + `{{with string . "prefix"}}{{.}} {{end}}{{counters . }} {{bar . }} {{percent . }} {{rtime . "ETA %s"}}{{with string . "suffix"}} {{.}}{{end}}`
+		bar = pb.ProgressBarTemplate(tmpl).New(truncateCount)
+		bar.SetRefreshRate(time.Second)
+		bar.SetWriter(truncator.writer)
 		bar.Start()
 	}
 
@@ -82,7 +84,9 @@ func (truncator *FileTruncator) Remove() error {
 	}
 
 	if truncator.OutputType == output.Type_ProgressBar {
-		bar.FinishPrint("Removed " + truncator.FilePath)
+		bar.Finish()
+		finishMessage := fmt.Sprintf("Removed " + truncator.FilePath)
+		fmt.Println(finishMessage)
 	}
 
 	file.Close()

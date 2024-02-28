@@ -5,17 +5,19 @@ import (
 	"os"
 	"testing"
 	"time"
+
+	"github.com/elastic-infra/go-remove-slowly/output"
 )
 
 func TestNewFileTruncator(t *testing.T) {
-	truncator := NewFileTruncator("path", time.Duration(10), DefaultTruncateSizeMB, nil)
+	truncator := NewFileTruncator("path", time.Duration(10), DefaultTruncateSizeMB, output.Type_ProgressBar, nil)
 	if truncator.FilePath != "path" {
 		t.Fatalf("FilePath is incorrect")
 	}
 }
 
 func TestTruncateCount(t *testing.T) {
-	truncator := NewFileTruncator("path", time.Duration(10), DefaultTruncateSizeMB, nil)
+	truncator := NewFileTruncator("path", time.Duration(10), DefaultTruncateSizeMB, output.Type_ProgressBar, nil)
 	tests := []struct {
 		size  int64
 		count int
@@ -48,7 +50,7 @@ func TestUpdateStat(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to write to the file %s", err.Error())
 	}
-	truncator := NewFileTruncator(path, time.Duration(1), DefaultTruncateSizeMB, nil)
+	truncator := NewFileTruncator(path, time.Duration(1), DefaultTruncateSizeMB, output.Type_ProgressBar, nil)
 	err = truncator.UpdateStat()
 	if err != nil {
 		t.Fatalf("UpdateStat failed: %s", err.Error())
@@ -60,7 +62,7 @@ func TestUpdateStat(t *testing.T) {
 
 func TestUpdateStat_PathError(t *testing.T) {
 	path := fmt.Sprintf("%s/%s", os.TempDir(), "statTestFile")
-	truncator := NewFileTruncator(path, time.Duration(1), DefaultTruncateSizeMB, nil)
+	truncator := NewFileTruncator(path, time.Duration(1), DefaultTruncateSizeMB, output.Type_ProgressBar, nil)
 	err := truncator.UpdateStat()
 	if err == nil {
 		t.Fatal("Error did not happen")
@@ -80,7 +82,7 @@ func TestRemove(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to write to the file %s", err.Error())
 	}
-	truncator := NewFileTruncator(path, time.Duration(1), DefaultTruncateSizeMB, nil)
+	truncator := NewFileTruncator(path, time.Duration(1), DefaultTruncateSizeMB, output.Type_ProgressBar, nil)
 	err = truncator.Remove()
 	if err != nil {
 		t.Fatalf("File Removal failed %s", err.Error())

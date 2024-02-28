@@ -92,6 +92,27 @@ func TestAction_Version(t *testing.T) {
 	}
 }
 
+func TestSimpleOutput(t *testing.T) {
+	app := NewApp()
+	createFile("test/bar/file0", 4*1024*1024)
+	output := captureOutput(func() {
+		err := app.Run([]string{"cmd", "--output", "simple", "--size", "1", "test/bar/file0"})
+		if err != nil {
+			t.Fatalf(err.Error())
+		}
+	})
+	t.Logf("Output: %s", output)
+	if !strings.Contains(output, "file: test/bar/file0") {
+		t.Fatalf("output must contain the name of the file which is being removed")
+	}
+	if !strings.Contains(output, "completion: 0.00%") {
+		t.Fatalf("output must contain 4 lines with each completion percentage ratio")
+	}
+	if !strings.Contains(output, "remaining: ") {
+		t.Fatalf("output must contain the remaining amount of time")
+	}
+}
+
 func createFile(path string, size int64) {
 	file, err := os.Create(path)
 	if err != nil {

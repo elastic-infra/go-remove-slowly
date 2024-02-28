@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/elastic-infra/go-remove-slowly/filesystem"
+	"github.com/elastic-infra/go-remove-slowly/output"
 	"github.com/urfave/cli/v2"
 )
 
@@ -94,7 +95,7 @@ func NewApp() *MyApp {
 
 		for _, target := range targetFilePaths {
 			fmt.Fprintln(app.stream, "Removing File: "+target)
-			truncator := filesystem.NewFileTruncator(target, context.Duration("interval"), context.Int64("size"), app.stream)
+			truncator := filesystem.NewFileTruncator(target, context.Duration("interval"), context.Int64("size"), output.Type(context.String("output")), app.stream)
 			if err := truncator.Remove(); err != nil {
 				fmt.Fprintf(os.Stderr, "File %s removal error: %s\n", target, err.Error())
 				errs = append(errs, err)
@@ -121,6 +122,12 @@ func NewApp() *MyApp {
 			Name:    "quiet",
 			Aliases: []string{"q"},
 			Usage:   "When true, no output is written",
+		},
+		&cli.StringFlag{
+			Name:    "output",
+			Aliases: []string{"o"},
+			Usage:   "Select the type of output produced (Supported options: simple, progress-bar)",
+			Value:   output.Type_ProgressBar,
 		},
 		&cli.BoolFlag{
 			Name:    "version",

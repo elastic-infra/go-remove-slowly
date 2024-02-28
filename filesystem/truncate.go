@@ -1,6 +1,7 @@
 package filesystem
 
 import (
+	"fmt"
 	"io"
 	"math"
 	"os"
@@ -47,17 +48,43 @@ func (truncator *FileTruncator) Remove() error {
 	if err != nil {
 		return err
 	}
+	startTime := time.Now()
 	truncateCount := truncator.TruncateCount()
-	bar := pb.New(truncateCount).SetUnits(pb.MiB)
-	bar.Output = truncator.writer
-	bar.Start()
+
+	var bar *pb.ProgressBar
+	if truncator.OutputType == output.Type_ProgressBar {
+		bar = pb.New(truncateCount).SetUnits(pb.MiB)
+		bar.Output = truncator.writer
+		bar.Start()
+	}
+
 	for i := 0; i < truncateCount; i++ {
-		bar.Increment()
+		if truncator.OutputType == output.Type_ProgressBar {
+			bar.Increment()
+		}
+
+		var eta time.Duration
+		if i != 0 {
+			eta = time.Duration(int(time.Since(startTime)) * (truncateCount - i) / i)
+		}
+
+		if truncator.OutputType == output.Type_Simple {
+			fmt.Printf("file: %s\tcompletion: %0.2f%%\tremaining: %s\n",
+				truncator.FilePath,
+				float64(i)/float64(truncateCount)*100,
+				eta.Round(time.Millisecond),
+			)
+		}
+
 		time.Sleep(truncator.TruncateInterval)
 		file.Truncate(truncator.FileSize - int64(i)*truncator.TruncateUnit)
 		file.Sync()
 	}
-	bar.FinishPrint("Removed " + truncator.FilePath)
+
+	if truncator.OutputType == output.Type_ProgressBar {
+		bar.FinishPrint("Removed " + truncator.FilePath)
+	}
+
 	file.Close()
 	if err := os.Remove(truncator.FilePath); err != nil {
 		return err

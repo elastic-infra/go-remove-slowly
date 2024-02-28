@@ -6,7 +6,6 @@ orbs:
 
 executors:
   builder:
-    working_directory: /go/src/github.com/elastic-infra/go-remove-slowly
     docker:
       - image: cimg/go:1.22.0
     environment:

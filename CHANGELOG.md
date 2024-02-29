@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.4.0](https://github.com/elastic-infra/go-remove-slowly/tree/1.4.0) (2024-02-29)
+
+[Full Changelog](https://github.com/elastic-infra/go-remove-slowly/compare/v1.3.0...1.4.0)
+
+**Merged pull requests:**
+
+- Update modules [\#13](https://github.com/elastic-infra/go-remove-slowly/pull/13) ([limitusus](https://github.com/limitusus))
+- Fix CI [\#12](https://github.com/elastic-infra/go-remove-slowly/pull/12) ([limitusus](https://github.com/limitusus))
+- Add an option to print simple output to STDOUT \(instead of progress bar\) [\#11](https://github.com/elastic-infra/go-remove-slowly/pull/11) ([icyflame](https://github.com/icyflame))
+
 ## [v1.3.0](https://github.com/elastic-infra/go-remove-slowly/tree/v1.3.0) (2021-11-12)
 
 [Full Changelog](https://github.com/elastic-infra/go-remove-slowly/compare/v1.2.0...v1.3.0)

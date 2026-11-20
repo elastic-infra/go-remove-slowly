@@ -22,7 +22,7 @@ jobs:
         with:
           go-version-file: .go-version
 
-      - run: go install gotest.tools/gotestsum@latest
+      - run: go install gotest.tools/gotestsum@v1.12.2
 
       - run: make test
 
